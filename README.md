@@ -11,4 +11,6 @@ project 01
 
 project 02
 
-- Man the full adder took me way longer than it should have lol
+- Man the full adder took me way longer than it should have lol.
+
+- I built the Inc16 with a Not-Or (to get an alwasy 1 value) and a bunch of half adders. Then I learned about `true`. Oof.
