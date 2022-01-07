@@ -16,3 +16,7 @@ project 02
 - I built the Inc16 with a Not-Or (to get an alwasy 1 value) and a bunch of half adders. Then I learned about `true`. Oof.
 
 - Wow the ALU was fun! I misunderstood how the HDL worked again, though. I built an Or16Way and a Sig (return the signing bit) gate because I didn't know how to subscript the output of intermediate gates. After finishing my work, I found [this person's](https://github.com/xctom/Nand2Tetris/blob/master/projects/02/ALU.hdl) solution which does the subscripting I tried to do in an incorrect way. TIL!
+
+project 03
+
+- This was a straightforward chapter. Had to think a bit about how the counter worked and which control bits had precedence, but other than that they were all obvious implementations. :)
