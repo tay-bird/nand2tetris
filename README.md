@@ -20,3 +20,6 @@ project 02
 project 03
 
 - This was a straightforward chapter. Had to think a bit about how the counter worked and which control bits had precedence, but other than that they were all obvious implementations. :)
+
+project 04
+- Okay, on reflection, I wonder if I never made it this far the first time I tried this course. That was _hard_.
