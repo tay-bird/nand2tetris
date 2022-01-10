@@ -23,3 +23,6 @@ project 03
 
 project 04
 - Okay, on reflection, I wonder if I never made it this far the first time I tried this course. That was _hard_.
+
+project 05
+- The CPU was intimidating and took a bit of debugging, but ultimately was easier than expected. I included my planning diagram as a JPG. Organizing my HDL code with comments and well-named pins was a lifesaver!
