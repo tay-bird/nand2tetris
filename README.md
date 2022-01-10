@@ -26,3 +26,4 @@ project 04
 
 project 05
 - The CPU was intimidating and took a bit of debugging, but ultimately was easier than expected. I included my planning diagram as a JPG. Organizing my HDL code with comments and well-named pins was a lifesaver!
+- Computer get! I did it! :D
