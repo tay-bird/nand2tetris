@@ -330,8 +330,7 @@ AM=M-1
 D=M
 @SP
 AM=M-1
-D=D+M
-M=D
+M=D+M
 @SP
 M=M+1
 @112
@@ -346,8 +345,7 @@ AM=M-1
 D=M
 @SP
 AM=M-1
-D=M-D
-M=D
+M=M-D
 @SP
 M=M+1
 @SP
@@ -360,8 +358,7 @@ AM=M-1
 D=M
 @SP
 AM=M-1
-D=D&M
-M=D
+M=D&M
 @SP
 M=M+1
 @82
@@ -376,8 +373,7 @@ AM=M-1
 D=M
 @SP
 AM=M-1
-D=D|M
-M=D
+M=D|M
 @SP
 M=M+1
 @SP
