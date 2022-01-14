@@ -27,3 +27,6 @@ project 04
 project 05
 - The CPU was intimidating and took a bit of debugging, but ultimately was easier than expected. I included my planning diagram as a JPG. Organizing my HDL code with comments and well-named pins was a lifesaver!
 - Computer get! I did it! :D
+
+project 06/07
+- Whew! That was a big effort. I picked Ruby for building out these chapters because we use it at work and I'm not the most familiar with it yet. Definitely some hair-pulling on these, especially trying to wrap my head around the stack concept in chapter 7. I wish they'd provided some compiled .vm -> .asm examples, but I still figured it out eventually. I have to say, debugging the chapter 7 compilation was the most frustrating part of this project yet.
