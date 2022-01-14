@@ -82,8 +82,7 @@ class Code
         D=M
         @SP
         AM=M-1
-        D=D&M
-        M=D
+        M=D&M
         @SP
         M=M+1
       EOS
@@ -96,8 +95,7 @@ class Code
         D=M
         @SP
         AM=M-1
-        D=D+M
-        M=D
+        M=D+M
         @SP
         M=M+1
       EOS
@@ -205,8 +203,7 @@ class Code
         D=M
         @SP
         AM=M-1
-        D=D|M
-        M=D
+        M=D|M
         @SP
         M=M+1
       EOS
@@ -222,19 +219,19 @@ class Code
           M=D
         EOS
         'relative'=><<~EOS,
-        @%{offset}
-        D=A
-        @%{register}
-        D=M+D
-        @13
-        M=D
-        @SP
-        AM=M-1
-        D=M
-        @13
-        A=M
-        M=D
-      EOS
+          @%{offset}
+          D=A
+          @%{register}
+          D=M+D
+          @13
+          M=D
+          @SP
+          AM=M-1
+          D=M
+          @13
+          A=M
+          M=D
+        EOS
       }
     },
     'push'=>{
@@ -280,8 +277,7 @@ class Code
         D=M
         @SP
         AM=M-1
-        D=M-D
-        M=D
+        M=M-D
         @SP
         M=M+1
       EOS
