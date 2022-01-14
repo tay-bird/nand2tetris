@@ -259,7 +259,7 @@ class Code
           @%{offset}
           D=A
           @%{register}
-          A=A+D
+          A=M+D
           D=M
           @SP
           A=M
