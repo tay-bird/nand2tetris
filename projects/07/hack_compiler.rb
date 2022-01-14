@@ -341,6 +341,12 @@ class Compiler
       }
       type = 'global'
 
+    when 'static'
+      args = {
+        register: "#{@base_name}.#{@parser.arg2}"
+      }
+      type = 'global'
+
     when 'local', 'argument', 'this', 'that'
       args = {
         register: Code::REGISTERS[@parser.arg1],
