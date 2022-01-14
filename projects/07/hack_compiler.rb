@@ -4,21 +4,6 @@ end
 
 class Parser
 
-  # COMMANDS = {
-  #   ''=>C_UNKNOWN,
-  #   'and'=>C_ARITHMETIC,
-  #   'add'=>C_ARITHMETIC,
-  #   'eq'=>C_ARITHMETIC,
-  #   'gt'=>C_ARITHMETIC,
-  #   'lt'=>C_ARITHMETIC,
-  #   'neg'=>=>C_ARITHMETIC,
-  #   'not'=>C_ARITHMETIC,
-  #   'or'=>C_ARITHMETIC,
-  #   'pop'=>C_POP,
-  #   'push'=>C_PUSH,
-  #   'sub'=>C_ARITHMETIC
-  # }
-
   def initialize(vm_path)
     @vm_file = File.readlines(vm_path, chomp: true)
     @current_line = 0
@@ -298,12 +283,18 @@ end
 
 class Compiler
 
-  def initialize(read_file, write_file)
+  def initialize(read_file)
     @jump_counter = 0
-    @parser = Parser.new(read_file)
-    @write_file = write_file
+    @directory = File.dirname(read_file)
 
-    File.open(write_file, 'w') { |file| }
+    if File.directory?(read_file)
+    else
+      @base_name = File.basename(read_file, ".vm")
+      @parser = Parser.new(read_file)
+    end
+
+    @write_file = File.join(@directory, "#{@base_name}.asm")
+    File.open(@write_file, 'w') { |file| }
   end
 
   def compile
@@ -370,4 +361,4 @@ class Compiler
 end
 
 
-Compiler.new(ARGV[0], ARGV[1]).compile
+Compiler.new(ARGV[0]).compile
