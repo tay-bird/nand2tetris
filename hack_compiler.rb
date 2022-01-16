@@ -28,11 +28,17 @@ class Parser
     read.split[2]
   end
 
+  def command
+    unless read.empty?
+      read.split[0]
+    end
+  end
+
   def command_type
     if read.empty?
       Code::C_UNKNOWN
     else
-      Code::COMMANDS[read.split[0]]['command_type']
+      Code::COMMANDS[command]['command_type']
     end
   end
 
@@ -54,6 +60,7 @@ end
 class Code
 
   C_ARITHMETIC = 'C_ARITHMETIC'
+  C_LABEL = 'C_LABEL'
   C_POP = 'C_POP'
   C_PUSH = 'C_PUSH'
   C_UNKNOWN = 'C_UNKNOWN'
@@ -134,6 +141,9 @@ class Code
         @SP
         M=M+1
       EOS
+    },
+    'label'=>{
+      'command_type'=>C_LABEL,
     },
     'lt'=>{
       'command_type'=>C_ARITHMETIC,
@@ -302,13 +312,13 @@ class Compiler
       case @parser.command_type
 
       when Code::C_PUSH
-        write_pushpop('push', @parser.arg1, @parser.arg2)
+        write_pushpop
 
       when Code::C_POP
-        write_pushpop('pop', @parser.arg1, @parser.arg2)
+        write_pushpop
 
       when Code::C_ARITHMETIC
-        write_arithmetic(@parser.arg1)
+        write_arithmetic
 
       end
 
@@ -321,12 +331,15 @@ class Compiler
     @jump_counter
   end
 
-  def write_arithmetic(command)
-    code = Code::COMMANDS[command]['command_code'] % { counter: next_counter }
+  def write_arithmetic
+    code = Code::COMMANDS[@parser.command]['command_code'] % { counter: next_counter }
     write_line(code)
   end
 
-  def write_pushpop(command, segment, index)
+  def write_label
+  end
+
+  def write_pushpop
     case @parser.arg1
 
     when 'constant'
@@ -355,7 +368,7 @@ class Compiler
       type = 'relative'
     end
 
-    code = Code::COMMANDS[command]['command_code'][type] % args
+    code = Code::COMMANDS[@parser.command]['command_code'][type] % args
 
     write_line(code)
   end
