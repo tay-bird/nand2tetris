@@ -60,6 +60,7 @@ end
 class Code
 
   C_ARITHMETIC = 'C_ARITHMETIC'
+  C_GOTO = 'C_GOTO'
   C_LABEL = 'C_LABEL'
   C_POP = 'C_POP'
   C_PUSH = 'C_PUSH'
@@ -117,6 +118,13 @@ class Code
         M=M+1
       EOS
     },
+    'goto'=>{
+      'command_type'=>C_GOTO,
+      'command_code'=><<~EOS
+        @%{label}
+        0;JMP
+      EOS
+    },
     'gt'=>{
       'command_type'=>C_ARITHMETIC,
       'command_code'=><<~EOS
@@ -142,8 +150,21 @@ class Code
         M=M+1
       EOS
     },
+    'if-goto'=>{
+      'command_type'=>C_GOTO,
+      'command_code'=><<~EOS
+        @SP
+        AM=M-1
+        D=M
+        @%{label}
+        D;JNE
+      EOS
+    },
     'label'=>{
       'command_type'=>C_LABEL,
+      'command_code'=><<~EOS
+        (%{label})
+      EOS
     },
     'lt'=>{
       'command_type'=>C_ARITHMETIC,
@@ -296,6 +317,7 @@ class Compiler
   def initialize(read_file)
     @jump_counter = 0
     @directory = File.dirname(read_file)
+    @current_function = nil
 
     if File.directory?(read_file)
     else
@@ -311,14 +333,14 @@ class Compiler
     while @parser.more_commands?
       case @parser.command_type
 
-      when Code::C_PUSH
-        write_pushpop
-
-      when Code::C_POP
-        write_pushpop
-
       when Code::C_ARITHMETIC
         write_arithmetic
+
+      when Code::C_GOTO, Code::C_LABEL
+        write_labelgoto
+
+      when Code::C_POP, Code::C_PUSH
+        write_pushpop
 
       end
 
@@ -336,7 +358,20 @@ class Compiler
     write_line(code)
   end
 
-  def write_label
+  def write_labelgoto
+    if @current_function.nil?
+      args = {
+        label: @parser.arg1
+      }
+    else
+      args = {
+        label: "#{@current_function}:#{@parser.arg1}"
+      }
+    end
+
+    code = Code::COMMANDS[@parser.command]['command_code'] % args
+
+    write_line(code)
   end
 
   def write_pushpop
