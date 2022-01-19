@@ -99,7 +99,6 @@ class Code
     'call'=>{
       'command_type'=>C_CALL,
       'command_code'=><<~EOS
-        // push return-address
         @RET_%{counter}
         D=A
         @SP
@@ -107,7 +106,6 @@ class Code
         M=D
         @SP
         M=M+1
-        // push LCL
         @LCL
         D=M
         @SP
@@ -115,7 +113,6 @@ class Code
         M=D
         @SP
         M=M+1
-        // push ARG
         @ARG
         D=M
         @SP
@@ -123,7 +120,6 @@ class Code
         M=D
         @SP
         M=M+1
-        // push THIS
         @THIS
         D=M
         @SP
@@ -131,7 +127,6 @@ class Code
         M=D
         @SP
         M=M+1
-        // push THAT
         @THAT
         D=M
         @SP
@@ -139,18 +134,14 @@ class Code
         M=D
         @SP
         MD=M+1
-        // LCL = SP
         @LCL
         M=D
-        // ARG = SP-n-5
         @%{offset}
         D=D-A
         @ARG
         M=D
-        // goto f
         @%{target}
         0;JMP
-        // return-address
         (RET_%{counter})
       EOS
     },
@@ -509,22 +500,12 @@ class Compiler
     header = Code::COMMANDS['label']['command_code'] % { label: @parser.arg1 }
     write_line(header)
 
-    # @parser.arg2.to_i.times do
-    #   args = {
-    #     constant: 0
-    #   }
-    #
-    #   body = Code::COMMANDS['push']['command_code']['constant'] % args
-    #   write_line(body)
-    # end
-
-    (1..@parser.arg2.to_i).each do
+    @parser.arg2.to_i.times do
       args = {
-        offset: 0,
-        register: 'LCL'
+        constant: 0
       }
 
-      body = Code::COMMANDS['push']['command_code']['relative'] % args
+      body = Code::COMMANDS['push']['command_code']['constant'] % args
       write_line(body)
     end
   end
