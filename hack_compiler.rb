@@ -60,10 +60,13 @@ end
 class Code
 
   C_ARITHMETIC = 'C_ARITHMETIC'
+  C_CALL = 'C_CALL'
+  C_FUNCTION = 'C_FUNCTION'
   C_GOTO = 'C_GOTO'
   C_LABEL = 'C_LABEL'
   C_POP = 'C_POP'
   C_PUSH = 'C_PUSH'
+  C_RETURN = 'C_RETURN'
   C_UNKNOWN = 'C_UNKNOWN'
 
   COMMANDS = {
@@ -93,6 +96,64 @@ class Code
         M=M+1
       EOS
     },
+    'call'=>{
+      'command_type'=>C_CALL,
+      'command_code'=><<~EOS
+        // push return-address
+        @RET_%{counter}
+        D=A
+        @SP
+        A=M
+        M=D
+        @SP
+        M=M+1
+        // push LCL
+        @LCL
+        D=M
+        @SP
+        A=M
+        M=D
+        @SP
+        M=M+1
+        // push ARG
+        @ARG
+        D=M
+        @SP
+        A=M
+        M=D
+        @SP
+        M=M+1
+        // push THIS
+        @THIS
+        D=M
+        @SP
+        A=M
+        M=D
+        @SP
+        M=M+1
+        // push THAT
+        @THAT
+        D=M
+        @SP
+        A=M
+        M=D
+        @SP
+        MD=M+1
+        // LCL = SP
+        @LCL
+        M=D
+        // ARG = SP-n-5
+        @%{offset}
+        D=D-A
+        @ARG
+        M=D
+        // goto f
+        @%{target}
+        0;JMP
+        // return-address
+        (RET_%{counter})
+      EOS
+    },
     'eq'=>{
       'command_type'=>C_ARITHMETIC,
       'command_code'=><<~EOS
@@ -117,6 +178,9 @@ class Code
         @SP
         M=M+1
       EOS
+    },
+    'function'=>{
+      'command_type'=>C_FUNCTION
     },
     'goto'=>{
       'command_type'=>C_GOTO,
@@ -148,6 +212,16 @@ class Code
         (END_%{counter})
         @SP
         M=M+1
+      EOS
+    },
+    'header'=>{
+      'command_code'=><<~EOS
+        @256
+        D=A
+        @SP
+        M=D
+        @Sys.init
+        0;JMP
       EOS
     },
     'if-goto'=>{
@@ -285,6 +359,53 @@ class Code
         EOS
       }
     },
+    'return'=>{
+      'command_type'=>C_RETURN,
+      'command_code'=><<~EOS
+        @LCL
+        D=M
+        @FRAME
+        M=D
+        @5
+        A=D-A
+        D=M
+        @RET
+        M=D
+        @SP
+        A=M-1
+        D=M
+        @ARG
+        A=M
+        M=D
+        @ARG
+        D=M
+        @SP
+        M=D+1
+        @FRAME
+        AM=M-1
+        D=M
+        @THAT
+        M=D
+        @FRAME
+        AM=M-1
+        D=M
+        @THIS
+        M=D
+        @FRAME
+        AM=M-1
+        D=M
+        @ARG
+        M=D
+        @FRAME
+        AM=M-1
+        D=M
+        @LCL
+        M=D
+        @RET
+        A=M
+        0;JMP
+      EOS
+    },
     'sub'=>{
       'command_type'=>C_ARITHMETIC,
       'command_code'=><<~EOS
@@ -330,11 +451,20 @@ class Compiler
   end
 
   def compile
+    # write_header
+
     while @parser.more_commands?
       case @parser.command_type
 
       when Code::C_ARITHMETIC
         write_arithmetic
+
+      when Code::C_CALL
+        write_call
+
+      when Code::C_FUNCTION
+        @current_function = @parser.arg1
+        write_function
 
       when Code::C_GOTO, Code::C_LABEL
         write_labelgoto
@@ -342,6 +472,8 @@ class Compiler
       when Code::C_POP, Code::C_PUSH
         write_pushpop
 
+      when Code::C_RETURN
+        write_return
       end
 
       @parser.advance
@@ -354,8 +486,47 @@ class Compiler
   end
 
   def write_arithmetic
-    code = Code::COMMANDS[@parser.command]['command_code'] % { counter: next_counter }
+    args = {
+      counter: next_counter
+    }
+
+    code = Code::COMMANDS[@parser.command]['command_code'] % args
     write_line(code)
+  end
+
+  def write_call
+    args = {
+      counter: next_counter,
+      offset: @parser.arg2.to_i + 5,
+      target: @parser.arg1
+    }
+
+    code = Code::COMMANDS['call']['command_code'] % args
+    write_line(code)
+  end
+
+  def write_function
+    header = Code::COMMANDS['label']['command_code'] % { label: @parser.arg1 }
+    write_line(header)
+
+    # @parser.arg2.to_i.times do
+    #   args = {
+    #     constant: 0
+    #   }
+    #
+    #   body = Code::COMMANDS['push']['command_code']['constant'] % args
+    #   write_line(body)
+    # end
+
+    (1..@parser.arg2.to_i).each do
+      args = {
+        offset: 0,
+        register: 'LCL'
+      }
+
+      body = Code::COMMANDS['push']['command_code']['relative'] % args
+      write_line(body)
+    end
   end
 
   def write_labelgoto
@@ -370,7 +541,6 @@ class Compiler
     end
 
     code = Code::COMMANDS[@parser.command]['command_code'] % args
-
     write_line(code)
   end
 
@@ -404,7 +574,16 @@ class Compiler
     end
 
     code = Code::COMMANDS[@parser.command]['command_code'][type] % args
+    write_line(code)
+  end
 
+  def write_return
+    code = Code::COMMANDS['return']['command_code']
+    write_line(code)
+  end
+
+  def write_header
+    code = Code::COMMANDS['header']['command_code']
     write_line(code)
   end
 
