@@ -30,3 +30,6 @@ project 05
 
 project 06/07
 - Whew! That was a big effort. I picked Ruby for building out these chapters because we use it at work and I'm not the most familiar with it yet. Definitely some hair-pulling on these, especially trying to wrap my head around the stack concept in chapter 7. I wish they'd provided some compiled .vm -> .asm examples, but I still figured it out eventually. I have to say, debugging the chapter 7 compilation was the most frustrating part of this project yet.
+
+project 08
+- Pro tip: Have a C / embedded systems Googler with 15 years experience tutor you on how a stack works.

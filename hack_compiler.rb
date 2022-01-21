@@ -6,6 +6,7 @@ class Parser
 
   def initialize(vm_path)
     @vm_file = File.readlines(vm_path, chomp: true)
+    @vm_file_name = File.basename(vm_path, ".vm")
     @current_line = 0
 
     # Remove comments and strip whitespace
@@ -52,6 +53,10 @@ class Parser
 
   def reset
     @current_line = 0
+  end
+
+  def vm_file_name
+    @vm_file_name
   end
 
 end
@@ -211,8 +216,6 @@ class Code
         D=A
         @SP
         M=D
-        @Sys.init
-        0;JMP
       EOS
     },
     'if-goto'=>{
@@ -428,13 +431,16 @@ class Compiler
 
   def initialize(read_file)
     @jump_counter = 0
-    @directory = File.dirname(read_file)
     @current_function = nil
 
     if File.directory?(read_file)
+      @base_name = File.basename(read_file)
+      @directory = read_file
+      @parsers = Dir[File.join(read_file, "*.vm")].collect{ |p| Parser.new(p) }
     else
       @base_name = File.basename(read_file, ".vm")
-      @parser = Parser.new(read_file)
+      @directory = File.dirname(read_file)
+      @parsers = [Parser.new(read_file)]
     end
 
     @write_file = File.join(@directory, "#{@base_name}.asm")
@@ -442,32 +448,37 @@ class Compiler
   end
 
   def compile
-    # write_header
+    write_line('// header')
+    write_header
 
-    while @parser.more_commands?
-      case @parser.command_type
+    @parsers.each do |parser|
+      write_line('// new file')
+      @parser = parser
+      while @parser.more_commands?
+        case @parser.command_type
 
-      when Code::C_ARITHMETIC
-        write_arithmetic
+        when Code::C_ARITHMETIC
+          write_arithmetic
 
-      when Code::C_CALL
-        write_call
+        when Code::C_CALL
+          write_call
 
-      when Code::C_FUNCTION
-        @current_function = @parser.arg1
-        write_function
+        when Code::C_FUNCTION
+          @current_function = @parser.arg1
+          write_function
 
-      when Code::C_GOTO, Code::C_LABEL
-        write_labelgoto
+        when Code::C_GOTO, Code::C_LABEL
+          write_labelgoto
 
-      when Code::C_POP, Code::C_PUSH
-        write_pushpop
+        when Code::C_POP, Code::C_PUSH
+          write_pushpop
 
-      when Code::C_RETURN
-        write_return
+        when Code::C_RETURN
+          write_return
+        end
+
+        @parser.advance
       end
-
-      @parser.advance
     end
   end
 
@@ -542,7 +553,7 @@ class Compiler
 
     when 'static'
       args = {
-        register: "#{@base_name}.#{@parser.arg2}"
+        register: "#{@parser.vm_file_name}.#{@parser.arg2}"
       }
       type = 'global'
 
@@ -565,6 +576,14 @@ class Compiler
 
   def write_header
     code = Code::COMMANDS['header']['command_code']
+    write_line(code)
+
+    args = {
+      counter: next_counter,
+      offset: 0,
+      target: 'Sys.init'
+    }
+    code = Code::COMMANDS['call']['command_code'] % args
     write_line(code)
   end
 
