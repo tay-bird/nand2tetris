@@ -448,11 +448,9 @@ class Compiler
   end
 
   def compile
-    write_line('// header')
     write_header
 
     @parsers.each do |parser|
-      write_line('// new file')
       @parser = parser
       while @parser.more_commands?
         case @parser.command_type
