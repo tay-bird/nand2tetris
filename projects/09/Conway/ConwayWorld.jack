@@ -2,15 +2,16 @@ class ConwayWorld {
 
   field int sizeX, sizeY;  // screen size in pixels
   field int scale;         // scale of a single cell
+  field Array rows;        // Array[Array] - the world
 
   constructor ConwayWorld new(int AsizeX, int AsizeY, int Ascale) {
-    var Array rows;
     var int i;
 
+    let i = 0;
+    let rows = Array.new(AsizeX);
     let sizeX = AsizeX;
     let sizeY = AsizeY;
     let scale = Ascale;
-    let rows = Array.new(AsizeX);
 
     while (i < AsizeX) {
       let rows[i] = Array.new(AsizeY);
@@ -26,20 +27,133 @@ class ConwayWorld {
   }
 
   method void draw() {
+    var int x, y;
+    var int xFactor, yFactor;
+    var Array row;
+
+    let x = 0;
+
+    while (x < sizeX) {
+        let y = 0;
+        let xFactor = x * scale;
+        let row = rows[x];
+
+        while (y < sizeY) {
+            let yFactor = y * scale;
+            do Screen.setColor(row[y]);
+            do Screen.drawRectangle(xFactor, yFactor, xFactor + scale, yFactor + scale);
+            let y = y + 1;
+        }
+
+        let x = x + 1;
+    }
     return;
   }
 
-  method void randomize() {
-    return;
+  method boolean nextState(int x, int y) {
+      var Array neighbourStates;
+      var boolean currentState, nextState;
+      var int i, lessX, lessY, moreX, moreY, neighbourCount;
+
+      if (x = 0) { let lessX = sizeX - 1; }
+      else { let lessX = x - 1; }
+
+      if (y = 0) { let lessY = sizeY - 1; }
+      else { let lessY = y - 1; }
+
+      if (x + 1 = sizeX) { let moreX = 0; }
+      else { let moreX = x + 1; }
+
+      if (y + 1 = sizeY) { let moreY = 0; }
+      else { let moreY = y + 1; }
+
+      let currentState = state(x, y);
+      let neighbourCount = 0;
+
+      let neighbourStates = Array.new(8);
+      let neighbourStates[0] = state(lessX, lessY);
+      let neighbourStates[1] = state(lessX, y);
+      let neighbourStates[2] = state(lessX, moreY);
+      let neighbourStates[3] = state(x, lessY);
+      let neighbourStates[4] = state(x, moreY);
+      let neighbourStates[5] = state(moreX, lessY);
+      let neighbourStates[6] = state(moreX, y);
+      let neighbourStates[7] = state(moreX, moreY);
+
+      while (i < 8) {
+          if (neighbourStates[i] = true) {
+              let neighbourCount = neighbourCount + 1;
+          }
+          let i = i + 1;
+      }
+
+      if (neighbourCount = 3 | ((neighbourCount = 2) & currentState)) {
+          let nextState = true;
+      }
+      else {
+          let nextState = false;
+      }
+
+      do neighbourStates.dispose();
+
+      return nextState;
+  }
+
+  method void randomize(int seed) {
+      var int x, y, randSeed;
+      var Array row;
+
+      let x = 0;
+
+      while (x < sizeX) {
+          let y = 0;
+          let row = rows[x];
+
+          while (y < sizeY) {
+              let randSeed = Rand.rand(seed);
+
+              if (randSeed & 1) {
+                  let row[y] = true;
+              }
+              else {
+                  let row[y] = false;
+              }
+
+              let y = y + 1;
+          }
+
+          let x = x + 1;
+      }
+      return;
   }
 
   method boolean state(int x, int y) {
-    var boolean state;
-    let state = false;
+    var Array row;
+    var Boolean state;
+
+    let row = rows[x];
+    let state = row[y];
+
     return state;
   }
 
   method void update(ConwayWorld otherWorld) {
+    var int x, y;
+    var Array row;
+
+    let x = 0;
+
+    while (x < sizeX) {
+        let y = 0;
+        let row = rows[x];
+
+        while (y < sizeY) {
+            let row[y] = otherWorld.nextState(x, y);
+            let y = y + 1;
+        }
+
+        let x = x + 1;
+    }
     return;
   }
 }

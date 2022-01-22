@@ -1,0 +1,44 @@
+class Main {
+    function void main() {
+        do Main.print();
+        // do Sys.wait(2000);
+        do Main.draw();
+
+        return;
+    }
+
+    function void print() {
+        var int i, randNum;
+
+        while (i < 250) {
+            let randNum = Rand.randC(1234);
+
+            do Output.printInt(randNum);
+            do Output.printString(" ");
+
+            let i = i + 1;
+        }
+        return;
+    }
+
+    function void draw() {
+        var int x, y, randNum;
+
+        while (x < 250) {
+
+            let y = 0;
+            while (y < 250) {
+                let randNum = Rand.randC(1234);
+
+                do Screen.setColor(randNum & 1);
+                do Screen.drawPixel(x, y);
+
+                let y = y + 1;
+            }
+
+            let x = x + 1;
+        }
+
+        return;
+    }
+}

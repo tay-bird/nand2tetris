@@ -3,12 +3,11 @@ class ConwayGame {
   field ConwayWorld flip;
   field ConwayWorld flop;
 
+  field int scale;
+  field int seed;
+  field int size;
+
   constructor ConwayGame new() {
-    let flip = ConwayWorld.new(10, 10, 10);
-    let flop = ConwayWorld.new(10, 10, 10);
-
-    do flip.randomize();
-
     return this;
   }
 
@@ -22,15 +21,66 @@ class ConwayGame {
   method void run() {
     var char key;
 
-    while (~(key = 140)) {  // esc key
-       let key = Keyboard.keyPressed();
-       do flip.update(flop);
-       do flip.draw();
-       do flop.update(flip);
-       do flop.draw();
+    do runSplash();
 
-       do Sys.halt();
+    let flip = ConwayWorld.new(50, 25, 10);
+    let flop = ConwayWorld.new(50, 25, 10);
+
+    do flip.randomize(seed);
+
+    while (~(key = 140)) {  // esc key
+      let key = Keyboard.keyPressed();
+      do runConway();
     }
+    return;
+  }
+
+  method void runConway() {
+    do flip.draw();
+    do flop.update(flip);
+    do flop.draw();
+    do flip.update(flop);
+
+    return;
+  }
+
+  method void runSplash() {
+    var int key;
+    var String keyString;
+
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.println();
+    do Output.printString("                      Conway's Game of Life");
+
+
+    do Output.println();
+    do Output.println();
+    do Output.printString("                    Press Enter for draw mode");
+
+    do Output.println();
+    do Output.printString("                Press any other key for seed mode");
+
+    while (key = 0) {
+      let key = Keyboard.keyPressed();
+    }
+
+    if (key = 128) {
+        let seed = 0;
+    }
+    else {
+        let seed = key;
+    }
+
+    do Screen.clearScreen();
+
     return;
   }
 }

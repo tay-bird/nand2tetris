@@ -33,3 +33,7 @@ project 06/07
 
 project 08
 - Pro tip: Have a C / embedded systems Googler with 15 years experience tutor you on how a stack works.
+
+project 09
+- Character-size screen height: 23, width: 64
+- Damn why is generating random numbers so hard?? WHY MATH HARD??

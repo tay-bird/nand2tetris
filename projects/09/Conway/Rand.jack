@@ -1,0 +1,19 @@
+class Rand {
+    static int randSeed;
+
+    function int rand(int seed) {
+        if (randSeed = 0) {
+            let randSeed = seed;
+        }
+
+        let randSeed = ((randSeed * 13733) + 741);
+        let randSeed = Rand.modulo(randSeed, 20771);
+        return randSeed;
+    }
+
+    function int modulo(int a, int m) {
+        var int remainder;
+        let remainder = a - ((a / m) * m);
+        return remainder;
+    }
+}
