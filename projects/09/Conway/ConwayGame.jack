@@ -1,0 +1,36 @@
+class ConwayGame {
+
+  field ConwayWorld flip;
+  field ConwayWorld flop;
+
+  constructor ConwayGame new() {
+    let flip = ConwayWorld.new(10, 10, 10);
+    let flop = ConwayWorld.new(10, 10, 10);
+
+    do flip.randomize();
+
+    return this;
+  }
+
+  method void dispose() {
+    do flip.dispose();
+    do flop.dispose();
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method void run() {
+    var char key;
+
+    while (~(key = 140)) {  // esc key
+       let key = Keyboard.keyPressed();
+       do flip.update(flop);
+       do flip.draw();
+       do flop.update(flip);
+       do flop.draw();
+
+       do Sys.halt();
+    }
+    return;
+  }
+}

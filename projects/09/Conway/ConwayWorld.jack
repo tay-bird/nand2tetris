@@ -1,0 +1,45 @@
+class ConwayWorld {
+
+  field int sizeX, sizeY;  // screen size in pixels
+  field int scale;         // scale of a single cell
+
+  constructor ConwayWorld new(int AsizeX, int AsizeY, int Ascale) {
+    var Array rows;
+    var int i;
+
+    let sizeX = AsizeX;
+    let sizeY = AsizeY;
+    let scale = Ascale;
+    let rows = Array.new(AsizeX);
+
+    while (i < AsizeX) {
+      let rows[i] = Array.new(AsizeY);
+      let i = i + 1;
+    }
+
+    return this;
+  }
+
+  method void dispose() {
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method void draw() {
+    return;
+  }
+
+  method void randomize() {
+    return;
+  }
+
+  method boolean state(int x, int y) {
+    var boolean state;
+    let state = false;
+    return state;
+  }
+
+  method void update(ConwayWorld otherWorld) {
+    return;
+  }
+}
