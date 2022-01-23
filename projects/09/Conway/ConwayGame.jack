@@ -8,6 +8,7 @@ class ConwayGame {
   field int size;
 
   constructor ConwayGame new() {
+    let scale = 10;
     return this;
   }
 
@@ -23,10 +24,15 @@ class ConwayGame {
 
     do runSplash();
 
-    let flip = ConwayWorld.new(50, 25, 10);
-    let flop = ConwayWorld.new(50, 25, 10);
+    let flip = ConwayWorld.new(scale);
+    let flop = ConwayWorld.new(scale);
 
-    do flip.randomize(seed);
+    if (seed = 0) {
+        do runCreate();
+    }
+    else {
+        do flip.randomize(seed);
+    }
 
     while (~(key = 140)) {  // esc key
       let key = Keyboard.keyPressed();
@@ -36,12 +42,56 @@ class ConwayGame {
   }
 
   method void runConway() {
-    do flip.draw();
+    do flip.drawWorld();
     do flop.update(flip);
-    do flop.draw();
+    do flop.drawWorld();
     do flip.update(flop);
 
     return;
+  }
+
+  method void runCreate() {
+      var Cursor cursor;
+      var boolean drawCommand, exit;
+      var int direction, key, x, y;
+
+      let exit = false;
+      let cursor = Cursor.new(scale);
+
+      do cursor.draw();
+      do Sys.wait(500);
+
+      while (~exit) {
+          let direction = 0;
+          let drawCommand = false;
+          let key = Keyboard.keyPressed();
+
+          if (key = 131) { let direction = 1; }   // up arrow
+          if (key = 133) { let direction = 2; }   // down arrow
+          if (key = 130) { let direction = 3; }   // left arrow
+          if (key = 132) { let direction = 4; }   // right arrow
+          if (key = 140) { let exit = true; }     // esc key
+
+          if (direction > 0) {
+              let x = cursor.getX();
+              let y = cursor.getY();
+
+              do flip.drawCell(x, y);
+              do cursor.move(direction);
+          }
+
+          if (key = 128) {
+              let x = cursor.getX();
+              let y = cursor.getY();
+              do flip.set(x, y);
+          }
+
+          while (~(key = 0)) {
+              let key = Keyboard.keyPressed();
+          }  // wait for key release
+      }
+
+      return;
   }
 
   method void runSplash() {

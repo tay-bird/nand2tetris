@@ -4,6 +4,7 @@ class Main {
        let game = ConwayGame.new();
        do game.run();
        do game.dispose();
+       do Sys.halt();
        return;
     }
 }

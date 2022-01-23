@@ -1,0 +1,48 @@
+class Cursor {
+
+    field int scale;
+    field int sizeX;
+    field int sizeY;
+    field int x;
+    field int y;
+
+    constructor Cursor new(int Ascale) {
+        let scale = Ascale;
+        let sizeX = 512 / Ascale;
+        let sizeY = 256 / Ascale;
+
+        return this;
+    }
+
+    method void draw(){
+        var int xFactor, yFactor;
+
+        let xFactor = x * scale;
+        let yFactor = y * scale;
+
+        do Screen.setColor(true);
+        do Screen.drawRectangle(xFactor, yFactor, xFactor + scale, yFactor + scale);
+
+        return;
+    }
+
+    method void move(int direction) {
+        if (direction = 1) { let y = Math.max(y - 1, 0); }          // up key
+        if (direction = 2) { let y = Math.min(y + 1, sizeY - 1); }  // down key
+        if (direction = 3) { let x = Math.max(x - 1, 0); }          // left key
+        if (direction = 4) { let x = Math.min(x + 1, sizeX - 1); }  // right key
+
+        do draw();
+
+        return;
+    }
+
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
+}

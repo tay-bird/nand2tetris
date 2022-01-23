@@ -4,17 +4,17 @@ class ConwayWorld {
   field int scale;         // scale of a single cell
   field Array rows;        // Array[Array] - the world
 
-  constructor ConwayWorld new(int AsizeX, int AsizeY, int Ascale) {
+  constructor ConwayWorld new(int Ascale) {
     var int i;
 
     let i = 0;
-    let rows = Array.new(AsizeX);
-    let sizeX = AsizeX;
-    let sizeY = AsizeY;
+    let sizeX = 512 / Ascale;
+    let sizeY = 256 / Ascale;
     let scale = Ascale;
+    let rows = Array.new(sizeX);
 
-    while (i < AsizeX) {
-      let rows[i] = Array.new(AsizeY);
+    while (i < sizeX) {
+      let rows[i] = Array.new(sizeY);
       let i = i + 1;
     }
 
@@ -26,22 +26,32 @@ class ConwayWorld {
     return;
   }
 
-  method void draw() {
+  method void drawCell(int x, int y) {
+      var int xFactor, yFactor;
+      var Array row;
+
+      let row = rows[x];
+      let xFactor = x * scale;
+      let yFactor = y * scale;
+
+      do Screen.setColor(row[y]);
+      do Screen.drawRectangle(xFactor, yFactor, xFactor + scale, yFactor + scale);
+
+      return;
+  }
+
+  method void drawWorld() {
     var int x, y;
-    var int xFactor, yFactor;
     var Array row;
 
     let x = 0;
 
     while (x < sizeX) {
         let y = 0;
-        let xFactor = x * scale;
         let row = rows[x];
 
         while (y < sizeY) {
-            let yFactor = y * scale;
-            do Screen.setColor(row[y]);
-            do Screen.drawRectangle(xFactor, yFactor, xFactor + scale, yFactor + scale);
+            do drawCell(x, y);
             let y = y + 1;
         }
 
@@ -124,6 +134,17 @@ class ConwayWorld {
 
           let x = x + 1;
       }
+      return;
+  }
+
+  method void set(int x, int y) {
+      var Array row;
+
+      let row = rows[x];
+      let row[y] = ~row[y];
+
+      do drawCell(x, y);
+
       return;
   }
 
