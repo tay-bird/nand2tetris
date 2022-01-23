@@ -35,7 +35,7 @@ class ConwayWorld {
       let yFactor = y * scale;
 
       do Screen.setColor(row[y]);
-      do Screen.drawRectangle(xFactor, yFactor, xFactor + scale, yFactor + scale);
+      do Screen.drawRectangle(xFactor, yFactor, xFactor + scale - 1, yFactor + scale - 1);
 
       return;
   }
