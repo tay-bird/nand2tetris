@@ -8,7 +8,7 @@ class ConwayGame {
   field int size;
 
   constructor ConwayGame new() {
-    let scale = 10;
+    let scale = 8;
     return this;
   }
 
