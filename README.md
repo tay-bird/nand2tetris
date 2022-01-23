@@ -37,3 +37,4 @@ project 08
 project 09
 - Character-size screen height: 23, width: 64
 - Damn why is generating random numbers so hard?? WHY MATH HARD??
+- scale=8 seems to be the smallest I can get the scale of this Conway game without obvious and rather nauseating screen flicker. scale=6 causes a heap overflow - too many arrays, I suppose.
